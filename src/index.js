@@ -20,6 +20,9 @@ app.use("/activity", activityRoutes);
 const statusRoutes = require("./routes/status");
 app.use("/status", statusRoutes);
 
+const historyRoutes = require("./routes/history");
+app.use("/history", historyRoutes);
+
 // --- health check ---
 app.get("/status", (req, res) => {
   res.json({ ok: true });
