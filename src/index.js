@@ -23,6 +23,9 @@ app.use("/status", statusRoutes);
 const historyRoutes = require("./routes/history");
 app.use("/history", historyRoutes);
 
+const authRoutes = require("./routes/auth");
+app.use("/auth", authRoutes);
+
 // --- health check ---
 app.get("/status", (req, res) => {
   res.json({ ok: true });
