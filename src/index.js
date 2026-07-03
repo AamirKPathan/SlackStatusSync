@@ -1,29 +1,59 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const path = require("path");
+import express from "express";
+import fetch from "node-fetch";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+const PORT = process.env.PORT || 3000;
 
-// ROUTES
-const activityRoutes = require("./routes/activity");
-const authRoutes = require("./routes/auth");
-const oauthRoutes = require("./routes/oauth");
+// 1. Route to start Slack OAuth
+app.get("/oauth/slack", (req, res) => {
+  const params = new URLSearchParams({
+    client_id: process.env.SLACK_CLIENT_ID,
+    scope: "users.profile:read users.profile:write",
+    redirect_uri: "https://slackstatussync.onrender.com/oauth/callback"
+  });
 
-// REGISTER ROUTES
-app.use("/activity", activityRoutes);
-app.use("/auth", authRoutes);
-app.use("/oauth", oauthRoutes);
-
-// ROOT ROUTE
-app.get("/", (req, res) => {
-  res.send("SlackStatusSync API is running");
+  res.redirect(`https://slack.com/oauth/v2/authorize?${params.toString()}`);
 });
 
-// START SERVER
-const PORT = process.env.PORT || 3000;
+// 2. Route Slack redirects back to
+app.get("/oauth/callback", async (req, res) => {
+  const code = req.query.code;
+
+  if (!code) {
+    return res.status(400).send("Missing code parameter.");
+  }
+
+  const params = new URLSearchParams({
+    client_id: process.env.SLACK_CLIENT_ID,
+    client_secret: process.env.SLACK_CLIENT_SECRET,
+    code,
+    redirect_uri: "https://slackstatussync.onrender.com/oauth/callback"
+  });
+
+  const response = await fetch("https://slack.com/api/oauth.v2.access", {
+    method: "POST",
+    body: params
+  });
+
+  const data = await response.json();
+
+  if (!data.ok) {
+    console.error("Slack OAuth error:", data);
+    return res.status(500).send("Slack OAuth failed.");
+  }
+
+  // User token (this is what updates their Slack status)
+  const userToken = data.authed_user.access_token;
+
+  console.log("User Slack Token:", userToken);
+
+  res.send("SlackStatusSync installed successfully!");
+});
+
+// Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
