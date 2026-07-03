@@ -34,7 +34,7 @@ router.get("/callback", async (req, res) => {
           client_id: CLIENT_ID,
           client_secret: CLIENT_SECRET,
           code,
-          redirect_uri: "http://localhost:3000/oauth/callback"
+          redirect_uri: "https://slackstatussync.onrender.com/oauth/callback"
         }
       }
     );
