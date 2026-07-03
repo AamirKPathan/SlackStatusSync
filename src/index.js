@@ -12,7 +12,7 @@ app.get("/oauth/slack", (req, res) => {
   const params = new URLSearchParams({
     client_id: process.env.SLACK_CLIENT_ID,
     scope: "users.profile:read users.profile:write",
-    redirect_uri: "https://slackstatussync.onrender.com/oauth/callback"
+    redirect_uri: "https://slackstatussync-1.onrender.com/oauth/callback"
   });
 
   res.redirect(`https://slack.com/oauth/v2/authorize?${params.toString()}`);
@@ -30,7 +30,7 @@ app.get("/oauth/callback", async (req, res) => {
     client_id: process.env.SLACK_CLIENT_ID,
     client_secret: process.env.SLACK_CLIENT_SECRET,
     code,
-    redirect_uri: "https://slackstatussync.onrender.com/oauth/callback"
+    redirect_uri: "https://slackstatussync-1.onrender.com/oauth/callback"
   });
 
   const response = await fetch("https://slack.com/api/oauth.v2.access", {
