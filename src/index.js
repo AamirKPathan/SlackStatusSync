@@ -1,36 +1,29 @@
+require("dotenv").config();
 const express = require("express");
-const fs = require("fs");
-const marked = require("marked");
+const cors = require("cors");
+const path = require("path");
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
-// --- docs route ---
-app.get("/docs", (req, res) => {
-  const md = fs.readFileSync("./public/docs/docs.md", "utf8");
-  const html = marked.parse(md);
-  res.send(html);
-});
-
-// --- activity route ---
+// ROUTES
 const activityRoutes = require("./routes/activity");
-app.use("/activity", activityRoutes);
-
-// --- status route ---
-const statusRoutes = require("./routes/status");
-app.use("/status", statusRoutes);
-
-const historyRoutes = require("./routes/history");
-app.use("/history", historyRoutes);
-
 const authRoutes = require("./routes/auth");
-app.use("/auth", authRoutes);
+const oauthRoutes = require("./routes/oauth");
 
-// --- health check ---
-app.get("/status", (req, res) => {
-  res.json({ ok: true });
+// REGISTER ROUTES
+app.use("/activity", activityRoutes);
+app.use("/auth", authRoutes);
+app.use("/oauth", oauthRoutes);
+
+// ROOT ROUTE
+app.get("/", (req, res) => {
+  res.send("SlackStatusSync API is running");
 });
 
-app.listen(3000, () => {
-  console.log("API running on port 3000");
+// START SERVER
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

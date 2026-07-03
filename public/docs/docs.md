@@ -4,7 +4,7 @@
 Returns your current activity.
 
 ## GET /status
-REturns your current Slack status.
+Returns your current Slack status.
 
 ## POST /activity
 Updates your activity and updates Slack.

@@ -1,5 +1,10 @@
 {
-  "current": "Nothing yet",
-  "history": [],
+  "current": "Testing SlackStatusSync",
+  "history": [
+    {
+      "activity": "Testing SlackStatusSync",
+      "timestamp": 1783085703426
+    }
+  ],
   "slackToken": "test-token-123"
 }
