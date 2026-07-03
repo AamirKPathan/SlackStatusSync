@@ -5,6 +5,8 @@ const fs = require("fs");
 
 const CLIENT_ID = process.env.SLACK_CLIENT_ID;
 const CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET;
+const BASE_URL = process.env.SLACK_APP_URL || process.env.APP_URL || "http://localhost:3000";
+const REDIRECT_URI = `${BASE_URL.replace(/\/$/, "")}/oauth/callback`;
 
 // Step 1: Redirect user to Slack OAuth
 router.get("/slack", (req, res) => {
@@ -12,7 +14,7 @@ router.get("/slack", (req, res) => {
     + `?client_id=${CLIENT_ID}`
     + "&scope=users.profile:write"
     + "&user_scope=users.profile:write"
-    + "&redirect_uri=http://localhost:3000/oauth/callback";
+    + `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
 
   res.redirect(redirect);
 });
@@ -34,7 +36,7 @@ router.get("/callback", async (req, res) => {
           client_id: CLIENT_ID,
           client_secret: CLIENT_SECRET,
           code,
-          redirect_uri: "https://slackstatussync.onrender.com/oauth/callback"
+          redirect_uri: REDIRECT_URI
         }
       }
     );
