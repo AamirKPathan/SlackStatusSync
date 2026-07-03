@@ -7,7 +7,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 1. Route to start Slack OAuth
+// Route to start Slack OAuth
 app.get("/oauth/slack", (req, res) => {
   const params = new URLSearchParams({
     client_id: process.env.SLACK_CLIENT_ID,
@@ -18,7 +18,7 @@ app.get("/oauth/slack", (req, res) => {
   res.redirect(`https://slack.com/oauth/v2/authorize?${params.toString()}`);
 });
 
-// 2. Route Slack redirects back to
+// Route Slack redirects back to
 app.get("/oauth/callback", async (req, res) => {
   const code = req.query.code;
 
@@ -45,7 +45,6 @@ app.get("/oauth/callback", async (req, res) => {
     return res.status(500).send("Slack OAuth failed.");
   }
 
-  // User token (this is what updates their Slack status)
   const userToken = data.authed_user.access_token;
 
   console.log("User Slack Token:", userToken);
@@ -53,7 +52,6 @@ app.get("/oauth/callback", async (req, res) => {
   res.send("SlackStatusSync installed successfully!");
 });
 
-// Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
